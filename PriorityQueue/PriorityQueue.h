@@ -31,8 +31,10 @@ public:
     PriorityQueue(vector<T> elements);
     bool isEmpty() const;
     int size() const;
-    const T& popTop();
-    void push(const T& element);
+    const T& top() const;
+    void pop();
+    void insert(const T& element);
+    void sortQueue();
 };
 
 #include "PriorityQueue.cpp"

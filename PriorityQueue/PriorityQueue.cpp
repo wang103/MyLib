@@ -36,7 +36,14 @@ void PriorityQueue<T, Compare>::heapifyDown(int i) {
  */
 template <class T, class Compare>
 void PriorityQueue<T, Compare>::heapifyUp(int i) {
-    int pIndex = parent(i);
+    int pIndex;
+    
+    if (i == 1) {
+        // At the root.
+        return;
+    }
+    
+    pIndex = parent(i);
 
     if (comp(queue[i], queue[pIndex])) {
         T temp = queue[i];
@@ -49,31 +56,67 @@ void PriorityQueue<T, Compare>::heapifyUp(int i) {
 
 template <class T, class Compare>
 PriorityQueue<T, Compare>::PriorityQueue() {
-    //TODO: implementation.
+    // Root is at index 1, so put a mock object at index 0.
+    T mockObj;
+    queue.push_back(mockObj);
 }
 
 template <class T, class Compare>
 PriorityQueue<T, Compare>::PriorityQueue(vector<T> elements) {
-    //TODO: implementation.
+    // Root is at index 1, so put a mock object at index 0.
+    T mockObj;
+    queue.push_back(mockObj);
+    
+    queue.insert(queue.end(), elements.begin(), elements.end());
+
+    // Now build the priority queue.
+    for (int i = queue.size() - 1; i >= 1; i--) {
+        heapifyDown(i);
+    }
 }
 
 template <class T, class Compare>
 bool PriorityQueue<T, Compare>::isEmpty() const {
-    return queue.empty();
+    return queue.size() == 1;
 }
 
 template <class T, class Compare>
 int PriorityQueue<T, Compare>::size() const {
-    return queue.size();
+    return queue.size() - 1;
 }
 
 template <class T, class Compare>
-const T& PriorityQueue<T, Compare>::popTop() {
-    //TODO: implementation.
-    return queue[0];
+const T& PriorityQueue<T, Compare>::top() const {
+    return queue[1];
 }
 
 template <class T, class Compare>
-void PriorityQueue<T, Compare>::push(const T& element) {
-    //TODO: implementation.
+void PriorityQueue<T, Compare>::pop() {
+    queue[1] = queue.back();
+    queue.pop_back();
+    heapifyDown(1);
+}
+
+template <class T, class Compare>
+void PriorityQueue<T, Compare>::insert(const T& element) {
+    queue.push_back(element);
+    heapifyUp(queue.size() - 1);
+}
+
+/**
+ * Sort the entire tree such that for any subtree:
+ * priority(root) >= priority(left child) >= priority(right child).
+ */
+template <class T, class Compare>
+void PriorityQueue<T, Compare>::sortQueue() {
+    vector<T> tempQueue;
+    T temp;
+    tempQueue.push_back(temp);
+
+    while (!queue.isEmpty()) {
+        tempQueue.push_back(top());
+        pop();
+    }
+
+    queue = tempQueue;
 }
