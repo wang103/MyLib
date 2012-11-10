@@ -1,3 +1,6 @@
+# Vim Generated files
+*.swp
+
 # Compiled Object files
 *.slo
 *.lo
