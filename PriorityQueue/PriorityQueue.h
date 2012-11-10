@@ -9,7 +9,7 @@ using namespace std;
 // Macro for indexing.
 #define parent(i) (i >> 1)
 #define l_child(i) (i << 1)
-#define r_child(i) (i << 1 & 1)
+#define r_child(i) (i << 1 | 1)
 
 /**
  * T: Type of the elements.
@@ -35,6 +35,7 @@ public:
     void pop();
     void insert(const T& element);
     void sortQueue();
+    void getVector(vector<T>& elements) const;
 };
 
 #include "PriorityQueue.cpp"

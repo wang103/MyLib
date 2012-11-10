@@ -6,8 +6,8 @@
  */
 template <class T, class Compare>
 void PriorityQueue<T, Compare>::heapifyDown(int i) {
-    int lchildIndex = l_child(i);
-    int rchildIndex = r_child(i);
+    unsigned int lchildIndex = l_child(i);
+    unsigned int rchildIndex = r_child(i);
     int hpIndex = i;
 
     if (lchildIndex < queue.size() &&
@@ -24,7 +24,7 @@ void PriorityQueue<T, Compare>::heapifyDown(int i) {
         queue[i] = queue[hpIndex];
         queue[hpIndex] = temp;
 
-        heapifyDown(hpIndex);
+        this->heapifyDown(hpIndex);
     }
 }
 
@@ -71,7 +71,7 @@ PriorityQueue<T, Compare>::PriorityQueue(vector<T> elements) {
 
     // Now build the priority queue.
     for (int i = queue.size() - 1; i >= 1; i--) {
-        heapifyDown(i);
+        this->heapifyDown(i);
     }
 }
 
@@ -94,7 +94,7 @@ template <class T, class Compare>
 void PriorityQueue<T, Compare>::pop() {
     queue[1] = queue.back();
     queue.pop_back();
-    heapifyDown(1);
+    this->heapifyDown(1);
 }
 
 template <class T, class Compare>
@@ -113,10 +113,20 @@ void PriorityQueue<T, Compare>::sortQueue() {
     T temp;
     tempQueue.push_back(temp);
 
-    while (!queue.isEmpty()) {
+    while (!this->isEmpty()) {
         tempQueue.push_back(top());
         pop();
     }
 
     queue = tempQueue;
+}
+
+/**
+ * Get the heap as a vector and store the vector in elements.
+ * This can be used together with sortQueue() as heap sort algorithm.
+ */
+template <class T, class Compare>
+void PriorityQueue<T, Compare>::getVector(vector<T>& elements) const {
+    elements.clear();
+    elements.insert(elements.end(), ++queue.begin(), queue.end());
 }

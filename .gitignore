@@ -1,3 +1,6 @@
+# All binary test will be named 'test'
+test
+
 # Vim Generated files
 *.swp
 

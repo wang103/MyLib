@@ -1,11 +1,14 @@
 CC=g++
 
-CFLAGS=-c -Wall
+CFLAGS=-c -Wall -g
 
-all: PriorityQueue.o
+all: test
 
-PriorityQueue.o: PriorityQueue.h PriorityQueue.cpp
-	$(CC) $(CFLAGS) PriorityQueue.h -o PriorityQueue.o
+test: test.o
+	$(CC) test.o -o test
+
+test.o: test.cpp PriorityQueue.h PriorityQueue.cpp
+	$(CC) $(CFLAGS) test.cpp -o test.o
 
 clean:
 	rm -rf *.o
