@@ -7,7 +7,7 @@ all: test
 test: test.o
 	$(CC) test.o -o test
 
-test.o: test.cpp PriorityQueue.h PriorityQueue.cpp
+test.o: test.cpp QuickSort.h
 	$(CC) $(CFLAGS) test.cpp -o test.o
 
 clean:
