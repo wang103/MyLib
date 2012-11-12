@@ -28,7 +28,7 @@ void countingSort(vector<int>& input, vector<int>& output,
     // Find the largest element in input.
     int k = input[0];
     for (int i = 1; i < (int)input.size(); i++) {
-        if (comp(k, input[i])) {
+        if ((*comp)(k, input[i])) {
             k = input[i];
         }
     }
