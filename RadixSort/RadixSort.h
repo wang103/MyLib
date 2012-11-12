@@ -21,10 +21,12 @@ static bool smallerOnDigit(int a, int b) {
 
 /**
  * Radix sort using the stable counting sort as its intermediate sort.
- * This algorithm ensures O(n) running time. However it does not sort in place
- * because counting sort does not do so.
+ * This algorithm ensures O(n) running time because the k factor in the counting
+ * sort is constant (9). However the constant factor of this running time is a
+ * bit high, and it does not sort in place because the counting sort does not do
+ * so.
  *
- * Assume all elements in input are non-negative.
+ * Assume all elements in input are non-negative integers.
  */
 void radixSort(vector<int>& input, vector<int>& output) {
     output = input;
