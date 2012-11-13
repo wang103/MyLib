@@ -2,32 +2,45 @@
 #define SELECT_H
 
 #include <vector>
+#include <algorithm>        // sort()
 
 using namespace std;
 
-/**
- * Pick the pivot using the median-of-three method.
- */
 template <class T>
-static int getPivotIndex(vector<T>& elements, int start, int end) {
-    int median = (start + end + 1) / 2;
-    
-    T a = elements[start];
-    T b = elements[median];
-    T c = elements[end];
-
-    if (a > b && a > c) {
-        return b > c ? median : end;
-    }
-    if (b > a && b > c) {
-        return a > c ? start : end;
-    }
-    return a > b ? start : median;
-}
+static int selectIndex(vector<T>& elements, int start, int end, int i);
 
 template <class T>
 static int partition(vector<T>& elements, int start, int end) {
-    int pivot = getPivotIndex(elements, start, end);
+    int num = end - start + 1;
+    int reminder = num % 5;
+    int groupNum = (num / 5) + (reminder ? 1 : 0);
+    if (reminder == 0) {
+        reminder = 5;
+    }
+
+    // Sort each group, where the group has 5 memebers at most.
+    for (int i = 0; i < groupNum; i++) {
+        T temp;
+        if (i != groupNum - 1) {
+            sort(elements.begin() + start + i * 5,
+                 elements.begin() + start + i * 5 + 5);
+            temp = elements[start + 2 + 5 * i];
+            elements[start + 2 + 5 * i] = elements[start + i];
+            elements[start + i] = temp;
+        } else {
+            sort(elements.begin() + start + i * 5,
+                 elements.begin() + start + i * 5 + reminder);
+            temp = elements[start + (num - 5 * i) / 2];
+            elements[start + (num - 5 * i) / 2] = elements[start + i];
+            elements[start + i] = temp;
+        }
+    }
+
+    // Recursive call to get the median of medians.
+    int pivot = selectIndex(elements, start, start + groupNum - 1,
+                            start + groupNum / 2);
+    
+    // Acutally do the partition now.
     T pivotElement = elements[pivot];
 
     T temp = elements[pivot];
@@ -52,26 +65,31 @@ static int partition(vector<T>& elements, int start, int end) {
 }
 
 template <class T>
-static T& select(vector<T>& elements, int start, int end, int i) {
+static int selectIndex(vector<T>& elements, int start, int end, int i) {
+    if (start == end) {
+        return i;
+    }
+
     int pivot = partition(elements, start, end);
     
     if (pivot == i) {
-        return elements[i];
+        return i;
     } else if (pivot > i) {
-        return select(elements, start, pivot - 1, i);
+        return selectIndex(elements, start, pivot - 1, i);
     } else {
-        return select(elements, pivot + 1, end, i);
+        return selectIndex(elements, pivot + 1, end, i);
     }
 }
 
 /**
- * Return the value of the ith ordered element in linear time.
+ * Return the value of the ith ordered element in linear time in worst case by
+ * ensuring nice divide when finding the pivot.
  * The value of i starts from 0 (minimum).
  * This function could modify the ordering of the input elements.
  */
 template <class T>
 T& select(vector<T>& elements, int i) {
-    return select(elements, 0, elements.size() - 1, i);
+    return elements[selectIndex(elements, 0, elements.size() - 1, i)];
 }
 
 #endif
