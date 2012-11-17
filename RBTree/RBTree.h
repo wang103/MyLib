@@ -23,16 +23,35 @@ private:
     // Private inner class of tree node.
     class Node {
         T &value;
-        bool color;     // True indicates red, false indicates black.
-                        // NULL also indicates black.
+        bool isRed;     // True indicates red, false indicates black.
+                        // NULL 'node' is black node.
                         // If the node is red, then both children are black.
         Node *left;
         Node *right;
         Node *parent;
+
+        Node(T &v, bool r) {
+            value = v;
+            isRed = r;
+            left = NULL;
+            right = NULL;
+            parent = NULL;
+        }
     };
+
+    Node *root;
+
+    void leftRotate(Node *node);
+    void rightRotate(Node *node);
+
+    void insert(Node *node);
+    void remove(Node *node);
 
 public:
     RBTree();
+    ~RBTree();
+    void insertRB(T &value);
+    void removeRB(T &value);
 };
 
 #include "RBTree.cpp"
