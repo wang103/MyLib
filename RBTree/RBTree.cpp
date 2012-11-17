@@ -1,5 +1,3 @@
-#include <cstddef>
-
 /**
  * Assume the right child of node is not NULL.
  */
@@ -97,7 +95,45 @@ void RBTree<T, Compare>::insertRB(T &value) {
         // Since the root of the tree is always black, we know for sure that
         // the parent of node is not the root, and the parent of parent of node
         // exists.
+        // So, we also know that the node's parent's parent is black.
 
+        if (node->parent == node->parent->parent->left) {
+            Node *uncle = node->parent->parent->right;
+            if (uncle->isRed) {
+                // Uncle node is also red, just need to swap color.
+                node->parent->isRed = false;
+                uncle->isRed = false;
+                uncle->parent->isRed = true;
+                node = uncle->parent;
+            } else {
+                // Uncle node is black, need rotation.
+                if (node == node->parent->right) {
+                    node = node->parent;
+                    leftRotate(node);
+                }
+                node->parent->isRed = false;
+                node->parent->parent->isRed = true;
+                rightRotate(node->parent->parent);
+            }
+        } else {
+            Node *uncle = node->parent->parent->left;
+            if (uncle->isRed) {
+                // Uncle node is also red, just need to swap color.
+                node->parent->isRed = false;
+                uncle->isRed = false;
+                uncle->parent->isRed = true;
+                node = uncle->parent;
+            } else {
+                // Uncle node is black, need rotation.
+                if (node == node->parent->left) {
+                    node = node->parent;
+                    rightRotate(node);
+                }
+                node->parent->isRed = false;
+                node->parent->parent->isRed = true;
+                leftRotate(node->parent->parent);
+            }
+        }
     }
 
     // Ensure the root of the tree is always black.
