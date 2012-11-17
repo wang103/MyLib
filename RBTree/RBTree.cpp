@@ -1,3 +1,5 @@
+#include <iostream>
+
 /**
  * Assume the right child of node is not NULL.
  */
@@ -61,7 +63,7 @@ void RBTree<T, Compare>::insert(Node *node) {
 
     while (bottom != NULL) {
         top = bottom;
-        if (comp(node->value, bottom->value)) {
+        if (comp(node->value, bottom->value) < 0) {
             bottom = bottom->left;
         } else {
             bottom = bottom->right;
@@ -72,7 +74,7 @@ void RBTree<T, Compare>::insert(Node *node) {
     if (top == NULL) {
         root = node;
     } else {
-        if (comp(node->value, top->value)) {
+        if (comp(node->value, top->value) < 0) {
             top->left = node;
         } else {
             top->right = node;
@@ -82,10 +84,11 @@ void RBTree<T, Compare>::insert(Node *node) {
 
 template <class T, class Compare>
 void RBTree<T, Compare>::remove(Node *node) {
+
 }
 
 template <class T, class Compare>
-void RBTree<T, Compare>::insertRB(T &value) {
+void RBTree<T, Compare>::insertRB(const T &value) {
     Node *node = new Node(value, true);
     insert(node);
     
@@ -140,8 +143,42 @@ void RBTree<T, Compare>::insertRB(T &value) {
     root->isRed = false;
 }
 
+/**
+ * Return true if value is found in the tree. Otherwise return false.
+ */
 template <class T, class Compare>
-void RBTree<T, Compare>::removeRB(T &value) {
+bool RBTree<T, Compare>::removeRB(const T &value) {
+    Node *node = root;
+    while (node != NULL) {
+        if (comp(value, node->value) < 0) {
+            node = node->left;
+        } else if (comp(value, node->value) > 0) {
+            node = node->right;
+        } else {
+            break;
+        }
+    }
+
+    if (node == NULL) {
+        return false;
+    } else {
+        remove(node);
+        return true;
+    }
+}
+
+template <class T, class Compare>
+void RBTree<T, Compare>::inorderWalk(Node *curNode) const {
+    if (curNode != NULL) {
+        inorderWalk(curNode->left);
+        std::cout << curNode->value << std::endl;
+        inorderWalk(curNode->right);
+    }
+}
+
+template <class T, class Compare>
+void RBTree<T, Compare>::inorderWalk() const {
+    inorderWalk(root);
 }
 
 template <class T, class Compare>
