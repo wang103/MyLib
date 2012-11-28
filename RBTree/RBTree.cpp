@@ -1,6 +1,54 @@
 #include <iostream>
 
 /**
+ * Get the minimum node in the tree rooted at 'node'.
+ */
+template <class T, class Compare>
+typename RBTree<T, Compare>::Node *RBTree<T, Compare>::minimum(Node *node) {
+    while (node->left != NULL) {
+        node = node->left;
+    }
+    return node;
+}
+
+/**
+ * Get the maximum node in the tree rooted at 'node'.
+ */
+template <class T, class Compare>
+typename RBTree<T, Compare>::Node *RBTree<T, Compare>::maximum(Node *node) {
+    while (node->right != NULL) {
+        node = node->right;
+    }
+    return node;
+}
+
+template <class T, class Compare>
+typename RBTree<T, Compare>::Node *RBTree<T, Compare>::predecessor(Node *node) {
+    if (node->left != NULL) {
+        return maximum(node->left);
+    }
+    Node *parent = node->parent;
+    while (parent != NULL && node == parent->left) {
+        node = parent;
+        parent = node->parent;
+    }
+    return parent;
+}
+
+template <class T, class Compare>
+typename RBTree<T, Compare>::Node *RBTree<T, Compare>::successor(Node *node) {
+    if (node->right != NULL) {
+        return minimum(node->right);
+    }
+    Node *parent = node->parent;
+    while (parent != NULL && node == parent->right) {
+        node = parent;
+        parent = node->parent;
+    }
+    return parent;
+}
+
+/**
  * Assume the right child of node is not NULL.
  */
 template <class T, class Compare>
@@ -82,9 +130,145 @@ void RBTree<T, Compare>::insert(Node *node) {
     }
 }
 
+/**
+ * Fix the colors and perform necessary rotation to re-balance the tree after
+ * a deletion.
+ */
 template <class T, class Compare>
-void RBTree<T, Compare>::remove(Node *node) {
+void RBTree<T, Compare>::removeFixUp(Node *node, Node *parent,
+                                     bool isLeftChild) {
+    Node *sibling;
 
+    while (node != root && (node == NULL || node->isRed == false)) {
+        if (isLeftChild) {
+            sibling = parent->right;
+            
+            // First make sure the sibling is black.
+            if (sibling->isRed) {
+                // Swap color between parent and sibling.
+                sibling->isRed = false;
+                parent->isRed = true;
+                leftRotate(parent);
+                sibling = parent->right;
+            }
+
+            // Now the sibling must be black.
+            if ((sibling->left == NULL || sibling->left->isRed == false) &&
+                (sibling->right == NULL || sibling->right->isRed == false)) {
+                sibling->isRed = true;
+            }
+            else {
+                if (sibling->right->isRed == false) {
+                    // Make sure the sibling's left child is black, right child is red.
+                    sibling->left->isRed = false;
+                    sibling->isRed = true;
+                    rightRotate(sibling);
+
+                    sibling = parent->right;
+                }
+
+                // Now the sibling's left child is black, right child is red.
+                sibling->isRed = parent->isRed;
+                parent->isRed = false;
+                sibling->right->isRed = false;
+                leftRotate(parent);
+
+                node = root;
+                continue;
+            }
+
+        } else {
+            sibling = parent->left;
+            
+            // First make sure the sibling is black.
+            if (sibling->isRed) {
+                // Swap color between parent and sibling.
+                sibling->isRed = false;
+                parent->isRed = true;
+                rightRotate(parent);
+                sibling = parent->left;
+            }
+
+            // Now the sibling must be black.
+            if ((sibling->left == NULL || sibling->left->isRed == false) &&
+                (sibling->right == NULL || sibling->right->isRed == false)) {
+                sibling->isRed = true;
+            }
+            else {
+                if (sibling->left->isRed == false) {
+                    // Make sure the sibling's right child is black, left child is red.
+                    sibling->right->isRed = false;
+                    sibling->isRed = true;
+                    leftRotate(sibling);
+
+                    sibling = parent->left;
+                }
+
+                // Now the sibling's right child is black, left child is red.
+                sibling->isRed = parent->isRed;
+                parent->isRed = false;
+                sibling->left->isRed = false;
+                rightRotate(parent);
+
+                node = root;
+                continue;
+            }
+        }
+
+        // Update.
+        node = parent;
+        parent = parent->parent;
+        if (node == parent->left) {
+            isLeftChild = true;
+        } else {
+            isLeftChild = false;
+        }
+    }
+
+    node->isRed = false;
+}
+
+template <class T, class Compare>
+typename RBTree<T, Compare>::Node *RBTree<T, Compare>::remove(Node *node) {
+    bool isLeftChild = true;
+    Node *splicedOutNode;
+    if (node->left == NULL || node->right == NULL) {
+        splicedOutNode = node;
+    } else {
+        splicedOutNode = successor(node);
+    }
+
+    Node *child;
+    if (splicedOutNode->left != NULL) {
+        child = splicedOutNode->left;
+    } else {
+        child = splicedOutNode->right;
+    }
+
+    if (child != NULL) {
+        child->parent = splicedOutNode->parent;
+    }
+
+    if (splicedOutNode->parent == NULL) {
+        root = child;
+    } else if (splicedOutNode == splicedOutNode->parent->left) {
+        splicedOutNode->parent->left = child;
+        isLeftChild = true;
+    } else {
+        splicedOutNode->parent->right = child;
+        isLeftChild = false;
+    }
+
+    if (splicedOutNode != node) {
+        node->value = splicedOutNode->value;
+    }
+
+    // Rebalance the tree if needed.
+    if (root != NULL && splicedOutNode->isRed == false) {
+        removeFixUp(child, splicedOutNode->parent, isLeftChild);
+    }
+
+    return splicedOutNode;
 }
 
 template <class T, class Compare>
@@ -162,7 +346,8 @@ bool RBTree<T, Compare>::removeRB(const T &value) {
     if (node == NULL) {
         return false;
     } else {
-        remove(node);
+        Node *node = remove(node);
+        delete node;
         return true;
     }
 }
@@ -182,6 +367,20 @@ void RBTree<T, Compare>::inorderWalk() const {
 }
 
 template <class T, class Compare>
+void RBTree<T, Compare>::sort(vector<T>& array, Node *curNode) const {
+    if (curNode != NULL) {
+        sort(array, curNode->left);
+        array.push_back(curNode->value);
+        sort(array, curNode->right);
+    }
+}
+
+template <class T, class Compare>
+void RBTree<T, Compare>::sort(vector<T>& array) const {
+    sort(array, root);
+}
+
+template <class T, class Compare>
 RBTree<T, Compare>::RBTree() {
     root = NULL;
 }
@@ -189,8 +388,7 @@ RBTree<T, Compare>::RBTree() {
 template <class T, class Compare>
 RBTree<T, Compare>::~RBTree() {
     while (root != NULL) {
-        Node *temp = root;
-        remove(root);
+        Node *temp = remove(root);
         delete temp;
     }
 }

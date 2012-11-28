@@ -9,7 +9,12 @@ int main() {
     rbTree.insertRB(0);
     rbTree.insertRB(2);
 
-    rbTree.inorderWalk();
+    vector<int> array;
+    rbTree.sort(array);
+
+    assert(array[0] == 0);
+    assert(array[1] == 1);
+    assert(array[2] == 2);
 
     std::cout << "All tests passed!" << std::endl;
 

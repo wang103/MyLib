@@ -3,6 +3,7 @@
 
 #include <cstddef>
 #include <functional>
+#include <vector>
 
 using namespace std;
 
@@ -21,7 +22,7 @@ template <class T, class Compare = minus<T> >
 class RBTree {
 private:
     Compare comp;
-    
+   
     // Private inner class of tree node.
     class Node {
     public:
@@ -44,13 +45,20 @@ private:
 
     Node *root;
 
+    Node *minimum(Node *node);
+    Node *maximum(Node *node);
+    Node *predecessor(Node *node);
+    Node *successor(Node *node);
+
     void leftRotate(Node *node);
     void rightRotate(Node *node);
 
     void insert(Node *node);
-    void remove(Node *node);
+    Node *remove(Node *node);
+    void removeFixUp(Node *node, Node *parent, bool isLeftChild);
     
     void inorderWalk(Node *curNode) const;
+    void sort(vector<T>& array, Node *curNode) const;
 
 public:
     RBTree();
@@ -58,6 +66,7 @@ public:
     void insertRB(const T &value);
     bool removeRB(const T &value);
     void inorderWalk() const;
+    void sort(vector<T>& array) const;
 };
 
 #include "RBTree.cpp"
