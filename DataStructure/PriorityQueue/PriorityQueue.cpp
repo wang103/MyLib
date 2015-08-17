@@ -1,3 +1,24 @@
+template <class T, class Compare>
+PriorityQueue<T, Compare>::PriorityQueue() {
+    // Root is at index 1, so put a mock object at index 0.
+    T mockObj;
+    queue.push_back(mockObj);
+}
+
+template <class T, class Compare>
+PriorityQueue<T, Compare>::PriorityQueue(const vector<T>& elements) {
+    // Root is at index 1, so put a mock object at index 0.
+    T mockObj;
+    queue.push_back(mockObj);
+    
+    queue.insert(queue.end(), elements.begin(), elements.end());
+
+    // Now build the priority queue.
+    for (int i = queue.size() - 1; i >= 1; i--) {
+        this->heapifyDown(i);
+    }
+}
+
 /**
  * Assume that the binary tree rooted at l_child(i) and r_child(i) are heaps,
  * the ith element might be violating the heap property by having priority less
@@ -51,27 +72,6 @@ void PriorityQueue<T, Compare>::heapifyUp(int i) {
         queue[pIndex] = temp;
 
         heapifyUp(pIndex);
-    }
-}
-
-template <class T, class Compare>
-PriorityQueue<T, Compare>::PriorityQueue() {
-    // Root is at index 1, so put a mock object at index 0.
-    T mockObj;
-    queue.push_back(mockObj);
-}
-
-template <class T, class Compare>
-PriorityQueue<T, Compare>::PriorityQueue(vector<T> elements) {
-    // Root is at index 1, so put a mock object at index 0.
-    T mockObj;
-    queue.push_back(mockObj);
-    
-    queue.insert(queue.end(), elements.begin(), elements.end());
-
-    // Now build the priority queue.
-    for (int i = queue.size() - 1; i >= 1; i--) {
-        this->heapifyDown(i);
     }
 }
 

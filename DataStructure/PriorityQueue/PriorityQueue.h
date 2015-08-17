@@ -19,16 +19,9 @@ using namespace std;
  */
 template <class T, class Compare = less<T> >
 class PriorityQueue {
-private:
-    vector<T> queue;
-    Compare comp;
-
-    void heapifyDown(int i);
-    void heapifyUp(int i);
-
 public:
     PriorityQueue();
-    PriorityQueue(vector<T> elements);
+    PriorityQueue(const vector<T>& elements);
     bool isEmpty() const;
     int size() const;
     const T& top() const;
@@ -36,6 +29,13 @@ public:
     void insert(const T& element);
     void sortQueue();
     void getVector(vector<T>& elements) const;
+
+private:
+    vector<T> queue;
+    Compare comp;
+
+    void heapifyDown(int i);
+    void heapifyUp(int i);
 };
 
 #include "PriorityQueue.cpp"
