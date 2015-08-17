@@ -1,5 +1,6 @@
 # All binary test will be named 'test'
 test
+*.exe
 
 # Vim Generated files
 *.swp
